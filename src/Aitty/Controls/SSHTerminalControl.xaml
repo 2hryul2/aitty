@@ -34,7 +34,7 @@
                 <StackPanel Orientation="Horizontal" Margin="0,0,8,0" VerticalAlignment="Center">
                     <TextBlock Text="Host:" Foreground="#666" FontFamily="Consolas" FontSize="11"
                                VerticalAlignment="Center" Margin="0,0,4,0" />
-                    <TextBox x:Name="HostBox" Width="140" Text="192.168.1.1"
+                    <TextBox x:Name="HostBox" Width="140" Text="127.0.0.1"
                              Background="#111" Foreground="#00cc00" CaretBrush="#00ff00"
                              BorderBrush="#333" FontFamily="Consolas" FontSize="11" Padding="4,2" />
                 </StackPanel>
@@ -52,7 +52,7 @@
                 <StackPanel Orientation="Horizontal" Margin="0,0,8,0" VerticalAlignment="Center">
                     <TextBlock Text="User:" Foreground="#666" FontFamily="Consolas" FontSize="11"
                                VerticalAlignment="Center" Margin="0,0,4,0" />
-                    <TextBox x:Name="UserBox" Width="100" Text="root"
+                    <TextBox x:Name="UserBox" Width="100" Text="sds"
                              Background="#111" Foreground="#00cc00" CaretBrush="#00ff00"
                              BorderBrush="#333" FontFamily="Consolas" FontSize="11" Padding="4,2" />
                 </StackPanel>

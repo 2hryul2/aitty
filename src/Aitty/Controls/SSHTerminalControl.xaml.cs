@@ -29,7 +29,7 @@ public partial class SSHTerminalControl : UserControl
 
         _pollTimer.Tick += PollTimer_Tick;
 
-        ShowBanner();
+        Loaded += (_, _) => ShowBanner();
     }
 
     public void Initialize(SshService ssh, ConfigService config, KeyManagerService keys)
