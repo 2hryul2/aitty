@@ -1,29 +1,93 @@
 <Window x:Class="Aitty.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        xmlns:controls="clr-namespace:Aitty.Controls"
         Title="SSH AI Terminal"
         Width="1600" Height="900"
-        MinWidth="1200" MinHeight="600"
-        WindowStartupLocation="CenterScreen">
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
+        MinWidth="1000" MinHeight="500"
+        WindowStartupLocation="CenterScreen"
+        Background="#0a0a0a">
+
+    <DockPanel LastChildFill="True">
+
+        <!-- Menu -->
+        <Menu DockPanel.Dock="Top" Background="#111" Foreground="#00ff00">
+            <MenuItem Header="_File" Foreground="#00ff00">
                 <MenuItem Header="E_xit" InputGestureText="Ctrl+Q" Click="MenuExit_Click" />
             </MenuItem>
-            <MenuItem Header="_Edit">
-                <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Command="ApplicationCommands.Undo" />
-                <MenuItem Header="_Redo" InputGestureText="Ctrl+Y" Command="ApplicationCommands.Redo" />
-                <Separator />
-                <MenuItem Header="Cu_t" InputGestureText="Ctrl+X" Command="ApplicationCommands.Cut" />
-                <MenuItem Header="_Copy" InputGestureText="Ctrl+C" Command="ApplicationCommands.Copy" />
-                <MenuItem Header="_Paste" InputGestureText="Ctrl+V" Command="ApplicationCommands.Paste" />
-            </MenuItem>
-            <MenuItem Header="_View">
-                <MenuItem Header="_Reload" InputGestureText="Ctrl+R" Click="MenuReload_Click" />
-                <MenuItem Header="Toggle _DevTools" InputGestureText="F12" Click="MenuDevTools_Click" />
+            <MenuItem Header="_View" Foreground="#00ff00">
+                <MenuItem Header="_Reset Layout" Click="MenuResetLayout_Click" />
             </MenuItem>
         </Menu>
-        <wv2:WebView2 x:Name="webView" />
+
+        <!-- Header -->
+        <Border DockPanel.Dock="Top" Background="#111111" BorderBrush="#222" BorderThickness="0,0,0,1" Padding="16,10">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="Aitty v0.1.0"
+                           Foreground="#00ff00" FontSize="18" FontWeight="Bold"
+                           FontFamily="Consolas" />
+                <TextBlock Text="  SSH + AI Terminal for Windows"
+                           Foreground="#555" FontSize="12"
+                           FontFamily="Consolas" VerticalAlignment="Bottom" Margin="8,0,0,2"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Footer -->
+        <Border DockPanel.Dock="Bottom" Background="#111" BorderBrush="#222" BorderThickness="0,1,0,0" Padding="16,6">
+            <TextBlock Text="© 2026 Aitty  |  WPF .NET 8  |  Claude API"
+                       Foreground="#444" FontSize="11" FontFamily="Consolas"
+                       HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Main Layout: SSH | Splitter | AI -->
+        <Grid x:Name="MainGrid" Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="SshColumn" Width="*" MinWidth="200" />
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition x:Name="AiColumn" Width="*" MinWidth="200" />
+            </Grid.ColumnDefinitions>
+
+            <!-- SSH Terminal Panel -->
+            <Border Grid.Column="0"
+                    Background="#00140000" BorderBrush="#333" BorderThickness="1"
+                    CornerRadius="4">
+                <controls:SSHTerminalControl x:Name="SshTerminal" />
+            </Border>
+
+            <!-- GridSplitter (드래그 리사이저) -->
+            <GridSplitter Grid.Column="1"
+                          Width="6"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Background="#222"
+                          BorderBrush="#333" BorderThickness="1,0"
+                          Cursor="SizeWE"
+                          ShowsPreview="False">
+                <GridSplitter.Template>
+                    <ControlTemplate TargetType="GridSplitter">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <Rectangle Width="2" Height="40" Fill="#444"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1a3a1a"/>
+                                <Setter Property="BorderBrush" Value="#00ff00"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
+
+            <!-- AI Terminal Panel -->
+            <Border Grid.Column="2"
+                    Background="#0a0a14" BorderBrush="#333" BorderThickness="1"
+                    CornerRadius="4">
+                <controls:AITerminalControl x:Name="AiTerminal" />
+            </Border>
+        </Grid>
+
     </DockPanel>
 </Window>

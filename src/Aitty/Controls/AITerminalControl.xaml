@@ -1,0 +1,77 @@
+<UserControl x:Class="Aitty.Controls.AITerminalControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />   <!-- Header bar -->
+            <RowDefinition Height="*"    />   <!-- Chat area -->
+            <RowDefinition Height="Auto" />   <!-- Input bar -->
+            <RowDefinition Height="Auto" />   <!-- Status/token info -->
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#0d0d1a" BorderBrush="#1a1a3a" BorderThickness="0,0,0,1" Padding="12,6">
+            <DockPanel>
+                <TextBlock Text="AI Terminal" Foreground="#7c9ef0" FontFamily="Consolas"
+                           FontSize="13" FontWeight="Bold" VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock x:Name="ModelLabel" Text="claude-sonnet" Foreground="#444"
+                               FontFamily="Consolas" FontSize="10" VerticalAlignment="Center" Margin="0,0,10,0" />
+                    <Ellipse x:Name="ApiStatusDot" Width="8" Height="8" Fill="#555" Margin="0,0,6,0" VerticalAlignment="Center" />
+                    <TextBlock x:Name="ApiStatusText" Text="No API Key" Foreground="#555"
+                               FontFamily="Consolas" FontSize="11" VerticalAlignment="Center" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Chat Output -->
+        <ScrollViewer x:Name="ChatScroll" Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                      Background="#0a0a14" Padding="8">
+            <RichTextBox x:Name="ChatOutput"
+                         Background="Transparent" Foreground="#e0e0e0"
+                         FontFamily="Consolas" FontSize="12"
+                         BorderThickness="0" IsReadOnly="True"
+                         IsDocumentEnabled="True"
+                         VerticalAlignment="Top" />
+        </ScrollViewer>
+
+        <!-- Input Bar -->
+        <Border Grid.Row="2" Background="#0d0d1a" BorderBrush="#1a1a3a" BorderThickness="0,1,0,0" Padding="8,6">
+            <DockPanel>
+                <!-- Send / Cancel button -->
+                <Button x:Name="SendBtn" Content="Send" DockPanel.Dock="Right"
+                        Click="SendBtn_Click"
+                        Background="#1a1a3a" Foreground="#7c9ef0" BorderBrush="#2a2a5a"
+                        FontFamily="Consolas" FontSize="11" Padding="14,4" Margin="6,0,0,0"
+                        Cursor="Hand" />
+
+                <!-- Multi-line input -->
+                <TextBox x:Name="InputBox"
+                         Background="#060610" Foreground="#e0e0e0" CaretBrush="#7c9ef0"
+                         BorderBrush="#222" BorderThickness="1"
+                         FontFamily="Consolas" FontSize="12" Padding="6,4"
+                         AcceptsReturn="False"
+                         KeyDown="InputBox_KeyDown"
+                         VerticalAlignment="Center"
+                         MaxHeight="80" />
+            </DockPanel>
+        </Border>
+
+        <!-- Status Row -->
+        <Border Grid.Row="3" Background="#08080f" BorderBrush="#111" BorderThickness="0,1,0,0" Padding="12,3">
+            <DockPanel>
+                <TextBlock x:Name="StreamingIndicator" Text="⟳ Streaming…"
+                           Foreground="#556b9e" FontFamily="Consolas" FontSize="10"
+                           VerticalAlignment="Center" Visibility="Collapsed" />
+                <TextBlock x:Name="TokenInfo" Text="" Foreground="#333"
+                           FontFamily="Consolas" FontSize="10"
+                           VerticalAlignment="Center" HorizontalAlignment="Right"
+                           DockPanel.Dock="Right" />
+            </DockPanel>
+        </Border>
+
+    </Grid>
+</UserControl>
