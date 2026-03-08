@@ -1,0 +1,199 @@
+declare global {
+  interface Window {
+    chrome?: {
+      webview?: {
+        postMessage(message: any): void
+        addEventListener(type: string, listener: (e: MessageEvent) => void): void
+        removeEventListener(type: string, listener: (e: MessageEvent) => void): void
+      }
+    }
+  }
+}
+
+interface PendingRequest {
+  resolve: (value: any) => void
+  reject: (reason: any) => void
+  timer: ReturnType<typeof setTimeout>
+}
+
+type StreamChunkHandler = (chunk: string) => void
+
+const pending = new Map<string, PendingRequest>()
+const streamListeners = new Map<string, StreamChunkHandler>()
+const REQUEST_TIMEOUT = 30_000
+const STREAM_TIMEOUT = 120_000
+
+function isWebView2(): boolean {
+  return !!window.chrome?.webview
+}
+
+function init() {
+  if (!isWebView2()) return
+
+  window.chrome!.webview!.addEventListener('message', (e: MessageEvent) => {
+    try {
+      const msg = typeof e.data === 'string' ? JSON.parse(e.data) : e.data
+
+      // Handle streaming chunks
+      if (msg.type === 'ai:stream:chunk') {
+        const listener = streamListeners.get(msg.id)
+        if (listener && msg.payload?.chunk) {
+          listener(msg.payload.chunk)
+        }
+        return
+      }
+
+      const req = pending.get(msg.id)
+      if (!req) return
+
+      clearTimeout(req.timer)
+      pending.delete(msg.id)
+      streamListeners.delete(msg.id)
+
+      if (msg.error) {
+        req.reject(new Error(msg.error))
+      } else {
+        req.resolve(msg.payload)
+      }
+    } catch (err) {
+      console.error('[ipcBridge] Failed to parse message', err)
+    }
+  })
+}
+
+export function invoke<T = any>(type: string, payload: any = {}): Promise<T> {
+  if (!isWebView2()) {
+    return Promise.reject(new Error('WebView2 not available — running in browser mode'))
+  }
+
+  return new Promise<T>((resolve, reject) => {
+    const id = crypto.randomUUID()
+
+    const timer = setTimeout(() => {
+      pending.delete(id)
+      reject(new Error(`IPC timeout: ${type}`))
+    }, REQUEST_TIMEOUT)
+
+    pending.set(id, { resolve, reject, timer })
+
+    window.chrome!.webview!.postMessage({ id, type, payload })
+  })
+}
+
+// SSH shortcuts
+export const ssh = {
+  connect: (conn: { host: string; port: number; username: string; password?: string; privateKey?: string; passphrase?: string }) =>
+    invoke<{ success: boolean }>('ssh:connect', conn),
+  disconnect: () =>
+    invoke<{ success: boolean }>('ssh:disconnect'),
+  exec: (command: string) =>
+    invoke<{ output: string }>('ssh:exec', { command }),
+  test: () =>
+    invoke<{ success: boolean }>('ssh:test'),
+  state: () =>
+    invoke<{ isConnected: boolean; isConnecting: boolean; error?: string; host?: string }>('ssh:state'),
+  shellWrite: (data: string) =>
+    invoke<{ success: boolean }>('ssh:shell:write', { data }),
+  shellRead: () =>
+    invoke<{ data: string | null }>('ssh:shell:read'),
+}
+
+// Config shortcuts
+export const config = {
+  load: () =>
+    invoke<{ theme: string; fontSize: number; fontFamily: string; sshConnections: any[]; lastConnection?: string }>('config:load'),
+  save: (cfg: any) =>
+    invoke<{ success: boolean }>('config:save', cfg),
+  addConnection: (conn: any) =>
+    invoke<{ success: boolean }>('config:connections:add', conn),
+  removeConnection: (host: string) =>
+    invoke<{ success: boolean }>('config:connections:remove', { host }),
+}
+
+// Key shortcuts
+export const keys = {
+  list: () =>
+    invoke<{ keys: string[]; directory: string }>('keys:list'),
+  validate: (path: string) =>
+    invoke<{ valid: boolean }>('keys:validate', { path }),
+  sshConfig: () =>
+    invoke<Record<string, Record<string, string>>>('keys:ssh-config'),
+}
+
+// AI shortcuts
+export interface AiSendResponse {
+  content: string
+  model: string
+  inputTokens: number
+  outputTokens: number
+}
+
+export interface AiStreamResponse {
+  content: string
+  done: boolean
+}
+
+export interface AiState {
+  isConfigured: boolean
+  model: string
+  historyCount: number
+}
+
+export const ai = {
+  send: (message: string, model?: string, systemPrompt?: string, maxTokens?: number) =>
+    invoke<AiSendResponse>('ai:send', { message, model, systemPrompt, maxTokens }),
+
+  stream: (message: string, onChunk: StreamChunkHandler, model?: string) => {
+    if (!isWebView2()) {
+      return Promise.reject(new Error('WebView2 not available — running in browser mode'))
+    }
+
+    return new Promise<AiStreamResponse>((resolve, reject) => {
+      const id = crypto.randomUUID()
+
+      const timer = setTimeout(() => {
+        pending.delete(id)
+        streamListeners.delete(id)
+        reject(new Error('AI stream timeout'))
+      }, STREAM_TIMEOUT)
+
+      pending.set(id, { resolve, reject, timer })
+      streamListeners.set(id, onChunk)
+
+      window.chrome!.webview!.postMessage({ id, type: 'ai:stream', payload: { message, model } })
+    })
+  },
+
+  cancelStream: () =>
+    invoke<{ success: boolean }>('ai:stream:cancel'),
+
+  configure: (config: { apiKey: string; model?: string; systemPrompt?: string; maxTokens?: number }) =>
+    invoke<{ success: boolean }>('ai:configure', config),
+
+  setKey: (apiKey: string) =>
+    invoke<{ success: boolean }>('ai:set-key', { apiKey }),
+
+  setModel: (model: string) =>
+    invoke<{ success: boolean; model: string }>('ai:set-model', { model }),
+
+  setSystem: (systemPrompt: string | null) =>
+    invoke<{ success: boolean }>('ai:set-system', { systemPrompt }),
+
+  state: () =>
+    invoke<AiState>('ai:state'),
+
+  history: () =>
+    invoke<{ messages: Array<{ role: string; content: string }> }>('ai:history'),
+
+  clear: () =>
+    invoke<{ success: boolean }>('ai:clear'),
+}
+
+// App shortcuts
+export const app = {
+  version: () =>
+    invoke<{ version: string }>('app:version'),
+}
+
+// Auto-init when module loads
+init()

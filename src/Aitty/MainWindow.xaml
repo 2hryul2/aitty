@@ -1,0 +1,29 @@
+<Window x:Class="Aitty.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        Title="SSH AI Terminal"
+        Width="1600" Height="900"
+        MinWidth="1200" MinHeight="600"
+        WindowStartupLocation="CenterScreen">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="E_xit" InputGestureText="Ctrl+Q" Click="MenuExit_Click" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Command="ApplicationCommands.Undo" />
+                <MenuItem Header="_Redo" InputGestureText="Ctrl+Y" Command="ApplicationCommands.Redo" />
+                <Separator />
+                <MenuItem Header="Cu_t" InputGestureText="Ctrl+X" Command="ApplicationCommands.Cut" />
+                <MenuItem Header="_Copy" InputGestureText="Ctrl+C" Command="ApplicationCommands.Copy" />
+                <MenuItem Header="_Paste" InputGestureText="Ctrl+V" Command="ApplicationCommands.Paste" />
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="_Reload" InputGestureText="Ctrl+R" Click="MenuReload_Click" />
+                <MenuItem Header="Toggle _DevTools" InputGestureText="F12" Click="MenuDevTools_Click" />
+            </MenuItem>
+        </Menu>
+        <wv2:WebView2 x:Name="webView" />
+    </DockPanel>
+</Window>

@@ -1,0 +1,238 @@
+.ssh-terminal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #000;
+  color: #00ff00;
+  font-family: 'Consolas', 'Courier New', monospace;
+  border: 1px solid #444;
+}
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #111;
+  border-bottom: 1px solid #333;
+  gap: 16px;
+}
+
+.terminal-header h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #00ff00;
+}
+
+.terminal-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.connected {
+  background-color: #1a3a1a;
+  color: #00ff00;
+}
+
+.status-badge.disconnected {
+  background-color: #3a1a1a;
+  color: #ff6666;
+}
+
+.status-info {
+  font-size: 12px;
+  color: #888;
+}
+
+.terminal-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.terminal-controls button {
+  padding: 6px 12px;
+  background-color: #1a1a1a;
+  color: #00ff00;
+  border: 1px solid #333;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  transition: all 0.2s;
+}
+
+.terminal-controls button:hover:not(:disabled) {
+  background-color: #2a2a2a;
+  border-color: #00ff00;
+}
+
+.terminal-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* SSH Connect Form */
+.ssh-connect-form {
+  padding: 8px 12px;
+  background-color: #0a0a0a;
+  border-bottom: 1px solid #333;
+}
+
+.ssh-connect-form .form-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.ssh-connect-form .form-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.ssh-connect-form .form-group-small {
+  flex: 0 0 80px;
+}
+
+.ssh-connect-form label {
+  font-size: 10px;
+  color: #888;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ssh-connect-form input {
+  padding: 4px 8px;
+  background-color: #111;
+  color: #0f0;
+  border: 1px solid #333;
+  border-radius: 2px;
+  font-size: 12px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  outline: none;
+}
+
+.ssh-connect-form input:focus {
+  border-color: #0f0;
+}
+
+.ssh-connect-form input::placeholder {
+  color: #444;
+}
+
+.connect-btn {
+  padding: 6px 20px;
+  background-color: #0a2a0a;
+  color: #0f0;
+  border: 1px solid #0f0;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.connect-btn:hover:not(:disabled) {
+  background-color: #0f0;
+  color: #000;
+}
+
+.connect-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.status-badge.connecting {
+  background-color: #2a2a0a;
+  color: #ffc107;
+}
+
+.status-badge.streaming {
+  background-color: #0a1a2a;
+  color: #00bcd4;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.terminal-controls button.active {
+  border-color: #0f0;
+  background-color: #0a2a0a;
+}
+
+/* AI Terminal specific */
+.ai-terminal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  font-family: 'Consolas', 'Courier New', monospace;
+  border: 1px solid #444;
+}
+
+.terminal-container {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.terminal-content {
+  width: 100%;
+  height: 100%;
+}
+
+/* xterm.js overrides */
+.xterm {
+  background-color: #000;
+  color: #00ff00;
+  font-size: 12px;
+}
+
+.xterm-screen {
+  background-color: #000;
+}
+
+.xterm-cursor-block {
+  background-color: #00ff00;
+  color: #000;
+}
+
+.xterm-cursor-block.xterm-cursor-blink.xterm-cursor-blink-on {
+  opacity: 1;
+}
+
+.xterm-cursor-block.xterm-cursor-blink.xterm-cursor-blink-off {
+  opacity: 0.2;
+}
+
+/* Selection highlight */
+.xterm-selection {
+  background-color: #004400;
+}
+
+/* Link styling */
+.xterm-link {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+.xterm-link:hover {
+  cursor: pointer;
+  background-color: #002200;
+}
